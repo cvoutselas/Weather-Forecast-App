@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Weather Forecast</title>
+    <style>
+        body {
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.75);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .forecast {
+            display: inline-block;
+            margin: 15px;
+            border: 1px solid white;
+            padding: 10px;
+            border-radius: 10px;
+            width: 250px;
+            height: 250px;
+            vertical-align: top;
+            overflow: hidden;
+        }
+
+        .current-weather {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body style="background-image: url('{{ city_image_url }}');">
+    <div class="container">
+        <h2>4-Day Weather Forecast</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="location">Location (City):</label>
+            <input type="text" id="location" name="location" required>
+            <input type="submit" value="Get Forecast">
+        </form>
+        {% if location_name %}
+            <div class="current-weather">
+                <h3>Weather for {{ location_name }}</h3>
+                <p>Current: {{ current_temperature }}°C, {{ current_condition }}</p>
+                <img src="{{ current_icon_url }}" alt="{{ current_condition }}" width="50">
+            </div>
+            {% for day in forecast_data %}
+                <div class="forecast">
+                     {% if day.date.date == current_date %}
+                        <h4>Today</h4>
+                    {% else %}
+                        <h4>{{ day.date|date:"l, F d, Y" }}</h4>
+                    {% endif %}
+                    <img src="{{ day.icon_url }}" alt="{{ day.condition }}" width="50">
+                    <p>Max: {{ day.max_temp }}°C</p>
+                    <p>Min: {{ day.min_temp }}°C</p>
+                    <p>Condition: {{ day.condition }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>
+
